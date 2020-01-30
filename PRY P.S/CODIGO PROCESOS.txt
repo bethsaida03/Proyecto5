@@ -1,0 +1,28 @@
+setwd("C:/Users/mac/Pictures/Procesos")
+rm(list =ls())
+#install.packages("wordcloud2")
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("wordcloud2")
+library("RColorBrewer")
+filePath <- "ETIQUETAS2P.txt"
+text <- readLines(filePath,encoding="UTF-16")
+text = iconv(text, to="ASCII//TRANSLIT")
+corpus <- Corpus(VectorSource(text))
+d  <- tm_map(corpus, tolower)
+d  <- tm_map(d, stripWhitespace)
+tdm <- TermDocumentMatrix(d)
+findFreqTerms(tdm, lowfreq=2)
+frecuentes<-findFreqTerms(tdm, lowfreq=2)
+#findAssocs(tdm, "pueblo", 0.45)
+#findAssocs(tdm, frecuentes, rep(0.50, rep=4) )
+m <- as.matrix(tdm) #lo vuelve una matriz
+v <- sort(rowSums(m),decreasing=TRUE) #lo ordena y suma
+df <- data.frame(word = names(v),freq=v)
+wordcloud(words = df$word, freq = df$freq, min.freq = 2,
+          max.words=2247, random.order=FALSE, rot.per=0.35,
+          colors=brewer.pal(8, "Dark2"))
+wordcloud2(df, size=0.6)
+#wordcloud2(df, size = 0.5, ellipticity = 0.1)
+
